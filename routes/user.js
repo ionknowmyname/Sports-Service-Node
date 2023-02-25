@@ -17,6 +17,8 @@ router.put("/:userId/password/update", users.updatePassword);
 
 router.post("/password/reset/request", users.forgotPassword);
 
+router.post("/password/reset/validate", users.validateOtp);
+
 router.put("/password/reset/new", users.setNewPassword);
 
 router.put("/:userId/username/update", users.updateUsername);

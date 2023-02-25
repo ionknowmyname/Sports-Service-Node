@@ -14,7 +14,7 @@ const sendEmail = (token, email) => {
         }
     })
 
-    const response = transporter.sendMail({
+    transporter.sendMail({
         from: 'faithful@faithfulolaleru.com',
         to: email,
         subject: 'Validate your Account!',
@@ -49,7 +49,7 @@ const resetPassword = (email) => {
         }
     })
 
-    const response = transporter.sendMail({
+    transporter.sendMail({
         from: 'faithful@faithfulolaleru.com',
         to: email,
         subject: 'Reset your Password!',
@@ -63,4 +63,31 @@ const resetPassword = (email) => {
     })    
 }
 
-module.exports = { sendEmail, resetPassword };
+const resetPassword2 = (otp, email) => {
+    const html = `<p>You requested to reset password, kindly use the code below to reset your password</p><p><h1>${otp}</h1></p>`;
+
+    const transporter = nodemailer.createTransport({
+        host: 'faithfulolaleru.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: 'faithful@faithfulolaleru.com',
+            pass: 'ionknowmyname'
+        }
+    })
+
+    transporter.sendMail({
+        from: 'faithful@faithfulolaleru.com',
+        to: email,
+        subject: 'Reset your Password!',
+        html: html
+    })
+    .then((message) => {
+        console.log("Message sent --> " + message.messageId);
+    })
+    .catch((err) => {
+        console.log("Error in sending email--> " + err.message);
+    })    
+}
+
+module.exports = { sendEmail, resetPassword, resetPassword2 };

@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const sendSMS = require("../validation/twilioService")
-const { sendEmail, resetPassword } = require("../validation/emailService")
+const { sendEmail, resetPassword2 } = require("../validation/emailService")
 const { createJwtToken } = require("../config/generateToken")
 const uuid = require('uuid').v4
 
@@ -140,7 +140,8 @@ const verifyPhone = async (req, res) => {
     const { otp, phonenumber } = req.body;
     const toUpdate = {
         isActive: true,
-        phoneVerified: true
+        phoneVerified: true,
+        otp: Math.floor(100000 + Math.random() * 900000) // after verifying phone successfully, set new otp 
     }
     
     User.findOneAndUpdate({ phonenumber }, toUpdate, { new: true })
@@ -172,7 +173,8 @@ const verifyEmail = async (req, res) => {
     const { token, email } = req.query;  // params
     const toUpdate = {
         isActive: true,
-        emailVerified: true
+        emailVerified: true, 
+        token: uuid()     // also set new uuid token if email is verified successfully
     }
 
     console.log("token from email verify query params --> " + token);
@@ -258,17 +260,61 @@ const forgotPassword = async (req, res) => {
     // Not required but can reset Password in DB to dummy password
     // can also set the user to inactive, & activate back after setting new password
 
-    const response = resetPassword(email);
+    User.findOne({ email: email }).then((user) => {
+        if (!user) {
+            return res.status(400).json({
+                message: "User does not exist. Please signup.",
+            });
+        }
 
-    if(response.messageId !== null) {
-        return res.status(200).send({
-            message: `Successfully sent Reset email to ${email}`
+        const response = resetPassword2(user.otp, email);
+
+        if(response.messageId !== null) {
+            return res.status(200).send({
+                message: `Successfully sent Reset email to ${email}`
+            });
+        } else {
+            return res.status(400).send({
+                message: `Failed to send Reset email to ${email}`
+            });
+        }
+
+        
+    })
+    .catch((err) => {
+        console.log("Error while verifying user phone number --> " + err.message);
+        res.status(500).send({
+            message: "Some error occurred while verifying user phone number"
         });
-    } else {
-        return res.status(400).send({
-            message: `Failed to send Reset email to ${email}`
+    });
+    
+}
+
+const validateOtp = async (req, res) => {
+    const { otp, email } = req.body;  
+
+    const newOtp = Math.floor(100000 + Math.random() * 900000);   // set new otp after every use
+
+    User.findOneAndUpdate({ email }, { newOtp }, { new: true })
+        .then((user) => {
+
+            if(otp !== user.otp) {
+                res.status(400).send({
+                    message: "Invalid OTP"
+                });
+            }
+
+            res.status(200).json({
+                message: "OTP is valid",
+                updatedUser: user,
+            });
+        })
+        .catch((err) => {
+            console.log("Error while validating OTP --> " + err.message);
+            res.status(500).send({
+                message: "Some error occurred while validating OTP"
+            });
         });
-    }
     
 }
 
@@ -397,5 +443,5 @@ const logout = async (req, res) => {
 
 
 module.exports = { create, login, verifyPhone, verifyEmail, updatePassword, 
-                            forgotPassword, setNewPassword, updateUsername, logout }
+                    forgotPassword, validateOtp, setNewPassword, updateUsername, logout }
 

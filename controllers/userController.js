@@ -268,6 +268,7 @@ const forgotPassword = async (req, res) => {
         }
 
         const response = resetPassword2(user.otp, email);
+        console.log("Response from email Service during Password reset --> " + response);
 
         if(response.messageId !== null) {
             return res.status(200).send({
@@ -282,9 +283,9 @@ const forgotPassword = async (req, res) => {
         
     })
     .catch((err) => {
-        console.log("Error while verifying user phone number --> " + err.message);
+        console.log("Error while sending Reset Password email --> " + err.message);
         res.status(500).send({
-            message: "Some error occurred while verifying user phone number"
+            message: "Some error occurred while sending Reset Password email"
         });
     });
     
@@ -344,7 +345,7 @@ const setNewPassword = async (req, res) => {
                     .then((user) => {
     
                         res.status(200).send({
-                            message: "User Password Updated Successfully",
+                            message: "User Password Reset Successfully",
                             updatedUser: user 
                         });
                     })

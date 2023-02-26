@@ -115,8 +115,7 @@ const login = (req, res) => {
                         message: "User Login Successful",
                         data: {
                             jwt: token,
-                            email: user.email,
-                            phone: user.phonenumber
+                            user: user
                         }
                     }); 
                 } else {
@@ -394,55 +393,38 @@ const updateUsername = async (req, res) => {
     
 }
 
+const getUserById = async (req, res) => {
+    
+    const { userId } = req.params;
+    User.findById({ _id: userId }).then((user) => {
+        
+        if (!user) {
+            return res.status(404).json({
+                message: "User does not exist. Please signup.",
+            });
+        }
+
+        res.status(200).json({
+            user: user,
+        });
+
+    })
+    .catch((err) => {
+        console.log("Error while retrieving user by id --> " + err.message);
+        res.status(500).send({
+            message: "Some error occurred while retrieving user by id"
+        });
+    });
+    
+}
+
 const logout = async (req, res) => {
     
-        // KEEP
-
-    // User.findById({ _id: userId }, { newPassword }, { new: true })
-    //     .then((user) => {
-    //         if (!user) {
-    //             return res.status(400).json({
-    //                 message: "User does not exist. Please signup.",
-    //             });
-    //         }
-
-    //         bcrypt.hash(newPassword, 10, (err, hashedPass) => {
-    //             if (err) {
-    //                 console.log("Error while hashing password --> " + err);
-    //                 return res.status(401).json({
-    //                     message: "Error while hashing password"
-    //                 });
-    //             }
-    
-    //             user.password = hashedPass;
-    
-    //             user.save()
-    //                 .then((user) => {
-    
-    //                     res.status(200).send({
-    //                         message: "User Password Updated Successfully",
-    //                         updatedUser: user 
-    //                     });
-    //                 })
-    //                 .catch((err) => {
-    //                     console.log("Error while updating password 1 --> " + err.message);
-    //                     res.status(500).send({
-    //                         message: "Some error occurred while updating password"
-    //                     });
-    //                 });
-    //         });
-            
-    //     })
-    //     .catch((err) => {
-    //         console.log("Error while updating password 2 --> " + err.message);
-    //         res.status(500).send({
-    //             message: "Some error occurred while updating password"
-    //         });
-    //     });
+    // NA: handle in front 
     
 }
 
 
-module.exports = { create, login, verifyPhone, verifyEmail, updatePassword, 
-                    forgotPassword, validateOtp, setNewPassword, updateUsername, logout }
+module.exports = { create, login, verifyPhone, verifyEmail, updatePassword, forgotPassword,
+                validateOtp, setNewPassword, updateUsername, getUserById, logout }
 

@@ -370,6 +370,13 @@ const updateUsername = async (req, res) => {
     const { userId } = req.params;
     const { username } = req.body;
 
+    if(!username) {
+        return res.status(400).send({
+            message: "Username is required"
+        });
+    
+    }
+
     User.findByIdAndUpdate({ _id: userId }, { username }, { new: true })
         .then((user) => {
             
@@ -380,7 +387,7 @@ const updateUsername = async (req, res) => {
             }
 
             res.status(200).json({
-                msg: "User username sucessfully updated",
+                message: "User username sucessfully updated",
                 updatedUser: user,
             });
         })
@@ -388,6 +395,40 @@ const updateUsername = async (req, res) => {
             console.log("Error while updating User username --> " + err.message);
             res.status(500).send({
                 message: "Some error occurred while updating User username"
+            });
+        });
+    
+}
+
+const updateEmail = async (req, res) => {
+    const { userId } = req.params;
+    const { email } = req.body;
+
+    if(!email) {
+        return res.status(400).send({
+            message: "Email is required"
+        });
+    
+    }
+
+    User.findByIdAndUpdate({ _id: userId }, { email }, { new: true })
+        .then((user) => {
+            
+            if (!user) {
+                return res.status(404).json({
+                    message: "User does not exist. Please signup.",
+                });
+            }
+
+            res.status(200).json({
+                message: "User Email sucessfully updated",
+                updatedUser: user,
+            });
+        })
+        .catch((err) => {
+            console.log("Error while updating User Email --> " + err.message);
+            res.status(500).send({
+                message: "Some error occurred while updating User email"
             });
         });
     
@@ -426,5 +467,5 @@ const logout = async (req, res) => {
 
 
 module.exports = { create, login, verifyPhone, verifyEmail, updatePassword, forgotPassword,
-                validateOtp, setNewPassword, updateUsername, getUserById, logout }
+                validateOtp, setNewPassword, updateUsername, updateEmail, getUserById, logout }
 

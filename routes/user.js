@@ -23,6 +23,8 @@ router.put("/password/reset/new", users.setNewPassword);
 
 router.put("/:userId/username/update", users.updateUsername);
 
+router.put("/:userId/email/update", users.updateEmail);
+
 router.get("/:userId", users.getUserById);
 
 router.post("/:userId/logout", users.logout);

@@ -1,12 +1,21 @@
-// best to do token as a separate schema
+**BACKEND SERVICE FOR SPORTS SERVICE - NODEJS - EXPRESS - MONGODB**
 
-// also do time validation on the otps
+**Service can:**
 
+- Create, Activate & Validate User
+- Send emails & SMS to validate email & Phone, and reset passwords
+- Get User by Id - Update User Profile (Username, Email, Password)
+- Log out User
 
-// forget password vs change password, 
+**Setup:**
 
-// change password, you logged in, just make a put request after validating previous password
+- git clone
+- "npm i" to install dependencies
+- "npm start" to start react app
 
-// forget password, send an email using FE link that'll get a UI, that'll now call POST endpoint to create new password
+**Notes/To-Do:**
 
-// don't use this forget password method for validating email, still let the link be a BE endpoint
+- Best practice is for OTP/Token to be a seperate schema/model
+- Time validate OTP i.e OTP is valid for a limited time
+- Best for UX, automatically log the user in after confirming password reset successful
+- Add Tests

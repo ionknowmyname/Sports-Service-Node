@@ -18,7 +18,7 @@ const create = async (req, res) => {
         return;
     }
 
-    const { email, phonenumber, password } = req.body;
+    const { email, phonenumber, password, interests } = req.body;
 
     await User.findOne({ email: email }).then((user) => {
         if (user) {
@@ -42,13 +42,18 @@ const create = async (req, res) => {
                 username: email,   // default username is email
                 email, 
                 phonenumber,
+                interests,
                 password: hashedPass,
                 otp: newOtp,
                 token: newToken
             });
 
+            console.log("user interests before saving --> ", user.interests)
+
             user.save()
                 .then((user) => {
+
+                    console.log("user interests after saving --> ", user.interests)
 
                     // send phone & email validation
                     const smsResponse = sendSMS(newOtp, phonenumber)
